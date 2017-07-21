@@ -1,0 +1,21 @@
+{
+  "name": "builder",
+  "version": "0.0.1",
+  "description": "React/Redux Application builder.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": "git+https://github.com/rabbitlive/builder.git",
+  "keywords": [
+    "webpack",
+    "react",
+    "redux"
+  ],
+  "author": "Rabbit <yfhj1990@hotmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/rabbitlive/builder/issues"
+  },
+  "homepage": "https://github.com/rabbitlive/builder#readme"
+}
