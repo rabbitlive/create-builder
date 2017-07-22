@@ -4,10 +4,11 @@ const { resolve } = require('path')
 const webpack = require('webpack')
 const ExternalsPlugin = require('webpack/lib/ExternalsPlugin')
 const nodeExternals = require('webpack-node-externals')
+const pkg = require('../package.json')
 
 function main() {
   webpack({
-    entry: resolve('node_modules/builder/index.js'),
+    entry: pkg.name,
     output: {
       filename: 'webpack.config.js',
       libraryTarget: 'commonjs2',
@@ -20,7 +21,7 @@ function main() {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['react', ['env', {
+              presets: [['env', {
                 target: {
                   browsers: ['last 1 Chrome versions']
                 },
@@ -38,7 +39,9 @@ function main() {
     target: 'node',
     node: false,
     plugins: [
-      new ExternalsPlugin('commonjs', nodeExternals(this.options))
+      new ExternalsPlugin('commonjs', nodeExternals({
+        whitelist: pkg.name
+      }))
     ]
 
   }, function(err, stats) {
