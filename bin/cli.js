@@ -21,7 +21,7 @@ function main() {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: [['env', {
+              presets: ['react', ['env', {
                 target: {
                   browsers: ['last 1 Chrome versions']
                 },
