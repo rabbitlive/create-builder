@@ -12,15 +12,15 @@
  */
 
 import { resolve } from 'path'
-import type WebpackOption from './webpack-option-type'
+import type { WebpackOption } from './webpack-option-type'
 import makeVendorDll from './dll-vendor'
 import makeHMRDll from './dll-hmr'
 
-type Option = {
+export type DllOption = {
   dll: 'vendor' | 'hmr'  
 }
 
-export default function makeDll(option: Option): WebpackOption | Array<WebpackOption> {
+export default function makeDll(option: *): WebpackOption | Array<WebpackOption> {
   const { dll: task, path } = option
   const { dll: dllDir } = path
   
@@ -32,6 +32,9 @@ export default function makeDll(option: Option): WebpackOption | Array<WebpackOp
     case 'hmr':
       return makeHMRDll(dllPath)
     default:
-      return [makeVendorDll(dllPath), makeHMRDll(dllPath)]
+      return [
+	makeVendorDll(dllPath),
+	makeHMRDll(dllPath)
+      ]
   }
 }

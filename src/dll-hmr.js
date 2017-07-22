@@ -12,7 +12,7 @@
  */
 
 import dlloption from './dll-option'
-import type WebpackOption from './webpack-option-type'
+import type { WebpackOption } from './webpack-option-type'
 
 function makeVendorDll(path: string): WebpackOption {
   return dlloption({

@@ -10,44 +10,30 @@
 
 import makeDll from './dll-builder'
 //import makeApp from './app'
-import type { DllOption } from './dll/dll-options'
+import defaultConfig from './default-config'
+import type { WebpackOption } from './webpack-option-type'
+import type { DllOption } from './dll-builder'
+import type { Config } from './default-config'
 
 type Option = {
   task: 'dll' | 'app' | 'service',
   options: DllOption,
 }
 
-type Config = {
-  path: {
-    src: string,
-    tmp: string,
-    dll: string,
-    dist: string,
-    deploy: string
-  }
-}
+type CombineOption =
+  | DllOption & Config
 
-const defaultConfig: Config = {
-  path: {
-    src: 'src',
-    tmp: 'tmp',
-    dll: 'tmp/dll',
-    dist: 'dist',
-    deploy: 'dist/deploy'
-  }
-}
-
-function make(option: Option): any {
-  const { task, ...opts } = option
-  const combineOptions = {
-      ...opts,
+function make(option: Option): WebpackOption | Array<WebpackOption> {
+  const { task, options } = option
+  const combineOption: CombineOption = {
+      ...options,
       ...defaultConfig,
       //...config
   }
 
   switch (task) {
     case 'dll':
-      return makeDll(combineOptions)
+      return makeDll(combineOption)
 
     default:
       throw new Error(`[Builder] Unknow task ${task}`)

@@ -10,17 +10,17 @@
  * @return {WebpackOption}
  */
 
-type WebpackOption = {
+export type WebpackOption = {
   entry: {
     [string]: Array<string> | string
   },
   output: {
-    path: string,
-    filename: string,
-    chunkFilename: string,
-    publicPath: string
+    path?: string,
+    filename?: string,
+    chunkFilename?: string,
+    publicPath?: string
   },
-  module: {
+  module?: {
     rules: Array<{
       test: RegExp,
       use: any
@@ -36,5 +36,3 @@ type WebpackOption = {
   },
   plugins?: Array<any>
 }
-
-export default WebpackOption

@@ -14,14 +14,14 @@
 
 import { resolve } from 'path'
 import { DllPlugin } from 'webpack'
-import type WebpackOption from './webpack-option-type'
+import type { WebpackOption } from './webpack-option-type'
 
-type DllOption = {
+type DllWebpackOption = {
   entry: $PropertyType<WebpackOption, 'entry'>,
   path: string
 }
 
-function dllOption(option: DllOption): WebpackOption {
+function dllOption(option: DllWebpackOption): WebpackOption {
   const {
     entry,
     path
