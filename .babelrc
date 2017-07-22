@@ -1,0 +1,17 @@
+{
+  "presets": [["env", {
+    "target": {
+      "browsers": ["last 1 Chrome versions"]
+    },
+    "modules": false,
+    "loose": true
+  }]],
+  "plugins": [
+    ["transform-object-rest-spread", { "useBuiltIns": true } ]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
+}
