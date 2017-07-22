@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# spec test
+test/test-*
+
+# flowtype
+flow-typed
