@@ -10,11 +10,14 @@
 
 export type Config = {
   path: {
-    src:    string,
-    tmp:    string,
-    dll:    string,
-    dist:   string,
+    src: string,
+    tmp: string,
+    dll: string,
+    dist: string,
     deploy: string
+  },
+  dll: {
+    hmr: boolean
   }
 }
 
@@ -25,6 +28,9 @@ const defaultConfig: Config = {
     dll:    'tmp/dll',
     dist:   'dist',
     deploy: 'dist/deploy'
+  },
+  dll: {
+    hmr: true
   }
 }
 

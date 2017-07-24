@@ -23,18 +23,22 @@ export type DllOption = {
 export default function makeDll(option: *): WebpackOption | Array<WebpackOption> {
   const { dll: task, path } = option
   const { dll: dllDir } = path
-  
+
+  // TODO
+  console.log(option)
+
   const dllPath: string = resolve(__dirname, dllDir)
 
   switch (task) {
-    case 'vendor':
-      return makeVendorDll(dllPath)
     case 'hmr':
       return makeHMRDll(dllPath)
-    default:
+    case 'all':
       return [
-	makeVendorDll(dllPath),
-	makeHMRDll(dllPath)
+	      makeVendorDll(dllPath),
+	      makeHMRDll(dllPath)
       ]
+    case 'vendor':
+    default:
+      return makeVendorDll(dllPath)
   }
 }

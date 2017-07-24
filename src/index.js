@@ -23,12 +23,14 @@ type Option = {
 type CombineOption =
   | DllOption & Config
 
+
 function make(option: Option): WebpackOption | Array<WebpackOption> {
-  const { task, options } = option
+  const { task, ...options } = option
+  let config = /*{*/{}/*}*/
   const combineOption: CombineOption = {
       ...options,
       ...defaultConfig,
-      //...config
+      ...config
   }
 
   switch (task) {

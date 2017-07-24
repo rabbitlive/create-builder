@@ -37,20 +37,7 @@
     "webpack": "^3.3.0",
     "webpack-dev-server": "^2.5.1"
   },
-  "peerDependencies": {
-    "babel-core": "^6",
-    "babel-loader": "^6 || ^7",
-    "babel-plugin-transform-object-rest-spread": "^6",
-    "babel-preset-env": "^1",
-    "babel-preset-react": "^6",
-    "react": "^14 || ^15",
-    "react-dom": "^14 || ^15",
-    "react-hot-loader": "next",
-    "webpack": "^2 || ^3",
-    "webpack-dev-server": "^2"
-  },
   "dependencies": {
-    "react": "^15.6.1",
     "webpack-node-externals": "^1.6.0"
   }
 }

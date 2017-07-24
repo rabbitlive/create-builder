@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/**
+ * cli.js
+ *
+ * Main entry, generate `webpack.config.js` file.
+ */
+
 const { resolve } = require('path')
 const webpack = require('webpack')
 const ExternalsPlugin = require('webpack/lib/ExternalsPlugin')
@@ -18,7 +24,7 @@ function main() {
       rules: [
         {
           test: /\.js$/,
-          use: {
+          use: [{
             loader: 'babel-loader',
             options: {
               presets: ['react', ['env', {
@@ -32,7 +38,9 @@ function main() {
                 ['transform-object-rest-spread', { 'useBuiltIns': true } ],
               ]
             }
-          }
+          }, {
+            loader: resolve(__dirname, 'loader.js') 
+          }]
         }
       ]
     },
