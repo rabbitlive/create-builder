@@ -4,8 +4,8 @@
   "description": "React/Redux Application builder.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "precommit": "lint-staged"
+    "test": "yarn jest",
+    "precommit": "yarn lint-staged"
   },
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
     "flow-bin": "^0.51.0",
     "glob": "^7.1.2",
     "jest": "^20.0.4",
+    "lint-staged": "^3.6.1",
     "prettier": "^1.5.2",
     "webpack": "^3.3.0",
     "webpack-dev-server": "^2.5.1"
