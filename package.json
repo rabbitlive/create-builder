@@ -4,7 +4,8 @@
   "description": "React/Redux Application builder.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "precommit": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -33,11 +34,18 @@
     "babel-preset-react": "^6.24.1",
     "flow-bin": "^0.51.0",
     "jest": "^20.0.4",
+    "prettier": "^1.5.2",
     "rimraf": "^2.6.1",
     "webpack": "^3.3.0",
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
     "webpack-node-externals": "^1.6.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "yarn prettier -- --write --no-semi --single-quote --parser=flow",
+      "git add"
+    ]
   }
 }
