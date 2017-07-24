@@ -9,7 +9,7 @@
  */
 
 import makeDll from './dll-builder'
-//import makeApp from './app'
+import makeApp from './app-builder'
 import defaultConfig from './default-config'
 import type { WebpackOption } from './webpack-option-type'
 import type { DllOption } from './dll-builder'
@@ -26,16 +26,17 @@ type CombineOption =
 function make(option: Option): WebpackOption | Array<WebpackOption> {
   const { task, ...options } = option
   let config: Config = /*{*/ {} /*}*/
-  const combineOption: CombineOption = {
-    ...options,
-    ...defaultConfig,
-    ...config
+  const combineOption: CombineOption = {    
+      ...defaultConfig,
+      ...config,
+      ...options
   }
 
   switch (task) {
     case 'dll':
       return makeDll(combineOption)
-
+    case 'app':
+      return makeApp(combineOption)
     default:
       throw new Error(`[Builder] Unknow task ${task}`)
   }

@@ -16,7 +16,14 @@ export type Config = {
     tmp: string,
     dll: string,
     dist: string,
-    deploy: string
+    deploy: string,
+    asset: string,
+    lib: string,
+    core: string,
+    component: string,
+    view: string,
+    image: string,
+    style: string
   }
 }
 
@@ -26,7 +33,14 @@ const defaultConfig: Config = {
     tmp: 'tmp',
     dll: 'tmp/dll',
     dist: 'dist',
-    deploy: 'dist/deploy'
+    deploy: 'dist/deploy',
+    asset: 'asset',
+    lib: 'src/lib',
+    core: 'src/core',
+    component: 'src/component',
+    view: 'src/view',
+    image: 'asset/images',
+    style: 'src/lib/styles'
   },
   dll: null
 }

@@ -23,7 +23,7 @@ export type DllOption = {
   hmrDllWebpackOption?: WebpackOption
 }
 
-export default function makeDll(
+function makeDll(
   option: *
 ): WebpackOption | Array<WebpackOption> {
   const {
@@ -50,3 +50,5 @@ export default function makeDll(
       return makeVendorDll(dllPath, vendorDllWebpackOption || dllWebpackOption)
   }
 }
+
+export default makeDll
