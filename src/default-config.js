@@ -8,16 +8,15 @@
  * Builder default config.
  */
 
+import type { DllOption } from './dll-option'
+
 export type Config = {
-  path: {
+  path?: {
     src: string,
     tmp: string,
     dll: string,
     dist: string,
     deploy: string
-  },
-  dll: {
-    hmr: boolean
   }
 }
 
@@ -29,9 +28,7 @@ const defaultConfig: Config = {
     dist: 'dist',
     deploy: 'dist/deploy'
   },
-  dll: {
-    hmr: true
-  }
+  dll: null
 }
 
 export default defaultConfig

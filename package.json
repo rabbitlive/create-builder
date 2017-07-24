@@ -41,6 +41,7 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
+    "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.6.0"
   },
   "lint-staged": {

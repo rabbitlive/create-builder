@@ -20,11 +20,12 @@ type Option = {
   options: DllOption
 }
 
-type CombineOption = DllOption & Config
+type CombineOption =
+  | DllOption & Config
 
 function make(option: Option): WebpackOption | Array<WebpackOption> {
   const { task, ...options } = option
-  let config = /*{*/ {} /*}*/
+  let config: Config = /*{*/ {} /*}*/
   const combineOption: CombineOption = {
     ...options,
     ...defaultConfig,
