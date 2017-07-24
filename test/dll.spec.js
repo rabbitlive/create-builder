@@ -12,7 +12,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000
 
 const name = 'test-dll'
 const dir = resolve(__dirname, name)
- 
+
 const mkdir = promisify(fs.mkdir)
 const writeFile = promisify(fs.writeFile)
 const exec = promisify(child_process.exec)
@@ -20,25 +20,36 @@ const glob = promisify(glob$)
 
 beforeAll(() => {
   return del(dir)
-	  .then(() => mkdir(dir))
-	  .then(() => writeFile(resolve(dir, 'package.json'), JSON.stringify({ name })))
-	  .then(() => writeFile(resolve(dir, '.babelrc'), JSON.stringify({
-	    "presets": ["react", ["env", {
-		    "target": {
-		      "browsers": ["last 1 Chrome versions"]
-		    },
-		    "modules": false,
-		    "loose": true
-	    }]],
-	    "plugins": [
-		    ["transform-object-rest-spread", { "useBuiltIns": true } ],
-	    ],
-	    "env": {
-		    "test": {
-		      "plugins": ["transform-es2015-modules-commonjs"]
-		    }
-	    }
-	  })))
+    .then(() => mkdir(dir))
+    .then(() =>
+      writeFile(resolve(dir, 'package.json'), JSON.stringify({ name }))
+    )
+    .then(() =>
+      writeFile(
+        resolve(dir, '.babelrc'),
+        JSON.stringify({
+          presets: [
+            'react',
+            [
+              'env',
+              {
+                target: {
+                  browsers: ['last 1 Chrome versions']
+                },
+                modules: false,
+                loose: true
+              }
+            ]
+          ],
+          plugins: [['transform-object-rest-spread', { useBuiltIns: true }]],
+          env: {
+            test: {
+              plugins: ['transform-es2015-modules-commonjs']
+            }
+          }
+        })
+      )
+    )
 })
 
 afterAll(() => {
@@ -50,15 +61,21 @@ test('Build vendor dll from `package.json`', () => {
   return exec(`yarn link`)
     .then(() => process.chdir(dir))
     .then(() => exec(`yarn add --offline react react-dom`))
-    .then(() => exec(`yarn add --offline --dev \
+    .then(() =>
+      exec(`yarn add --offline --dev \
 react-hot-loader@3.0.0-beta.7 \
 webpack \
 webpack-dev-server \
 babel-core babel-loader \
 babel-preset-env babel-preset-react \
-babel-plugin-transform-object-rest-spread`))
+babel-plugin-transform-object-rest-spread`)
+    )
     .then(() => exec(`yarn link @rabi/builder`))
-    .then(() => exec(`node node_modules/@rabi/builder/bin/cli.js & yarn webpack -- --env.task=dll`))
+    .then(() =>
+      exec(
+        `node node_modules/@rabi/builder/bin/cli.js & yarn webpack -- --env.task=dll`
+      )
+    )
     .then(() => glob(resolve(dir, 'tmp/dll') + '/*'))
     .then(data => {
       return expect(data.length).toBe(2)

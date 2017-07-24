@@ -10,13 +10,13 @@ const { resolve, sep } = require('path')
 module.exports = function(content, options) {
   let out = content
   const callback = this.async()
-  
-  if(!this.request.match(/src(\/|\\)index\.js$/)) {
+
+  if (!this.request.match(/src(\/|\\)index\.js$/)) {
     callback(null, content)
   } else {
     const config = resolve('./rabi.js')
     exists(config, isExists => {
-      if(!isExists) {
+      if (!isExists) {
         callback(null, content)
       } else {
         const REGEX_HOOK = /\/\*\{\*\/[^\/]+\/\*\}\*\//

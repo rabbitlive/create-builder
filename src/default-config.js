@@ -23,10 +23,10 @@ export type Config = {
 
 const defaultConfig: Config = {
   path: {
-    src:    'src',
-    tmp:    'tmp',
-    dll:    'tmp/dll',
-    dist:   'dist',
+    src: 'src',
+    tmp: 'tmp',
+    dll: 'tmp/dll',
+    dist: 'dist',
     deploy: 'dist/deploy'
   },
   dll: {
