@@ -17,18 +17,18 @@ import type { Config } from './default-config'
 
 type Option = {
   task: 'dll' | 'app' | 'service',
-  options: DllOption,
+  options: DllOption
 }
 
-type CombineOption =
-  | DllOption & Config
+type CombineOption = DllOption & Config
 
 function make(option: Option): WebpackOption | Array<WebpackOption> {
-  const { task, options } = option
+  const { task, ...options } = option
+  let config = /*{*/ {} /*}*/
   const combineOption: CombineOption = {
-      ...options,
-      ...defaultConfig,
-      //...config
+    ...options,
+    ...defaultConfig,
+    ...config
   }
 
   switch (task) {
@@ -40,5 +40,4 @@ function make(option: Option): WebpackOption | Array<WebpackOption> {
   }
 }
 
-
-export default make 
+export default make

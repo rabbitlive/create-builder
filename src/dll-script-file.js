@@ -13,7 +13,7 @@
  */
 
 function dllScriptFile(dir: string): * {
-  return function (name: string): string {
+  return function(name: string): string {
     return `/${dir}/${name}.js`
   }
 }

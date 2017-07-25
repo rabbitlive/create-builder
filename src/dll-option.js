@@ -22,14 +22,11 @@ type DllWebpackOption = {
 }
 
 function dllOption(option: DllWebpackOption): WebpackOption {
-  const {
-    entry,
-    path
-  } = option
+  const { entry, path } = option
 
-  const dllDirPath: string  = resolve(path)
+  const dllDirPath: string = resolve(path)
   const dllManifestPath: string = resolve(dllDirPath, '[name]-manifest.json')
-  
+
   return {
     entry: entry,
     output: {
