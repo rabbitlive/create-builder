@@ -15,12 +15,12 @@ module.exports = function(content, options) {
     callback(null, content)
   } else {
     const config = resolve('./rabi.js')
+    const pkg = resolve('./package.json')
     exists(config, isExists => {
       if (!isExists) {
         callback(null, content)
       } else {
-        const REGEX_HOOK = /\/\*\{\*\/[^\/]+\/\*\}\*\//
-        const tpl = `\
+        const configTpl = `\
 (function() {
 const configFile = require('${config.split(sep).join('/')}')
 const mod = configFile.default || configFile 
@@ -31,7 +31,12 @@ if(typeof mod === 'function') {
 }
 })()
 `
-        callback(null, content.replace(REGEX_HOOK, tpl))
+        const pkgTpl = `require('${pkg.split(sep).join('/')}')`
+        const replacedContent = content
+                 .replace(/\/\*config\{\*\/[^\/]+\/\*\}\*\//, configTpl)
+              .replace(/\/\*pkg\{\*\/[^\/]+\/\*\}\*\//, pkgTpl)
+        
+        callback(null, replacedContent)
       }
     })
   }

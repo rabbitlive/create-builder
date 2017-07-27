@@ -17,13 +17,22 @@ export type Config = {
     dll: string,
     dist: string,
     deploy: string,
-    asset: string,
-    lib: string,
-    core: string,
-    component: string,
-    view: string,
-    image: string,
-    style: string
+    app: {
+      lib: string,
+      core: string,
+      component: string,
+      view: string,
+      helper: string,
+      asset: string,
+      font: string,
+      image: string,
+      style: string,
+      data: string
+    }
+  },
+  server: {
+    host: string,
+    port: number
   }
 }
 
@@ -34,13 +43,22 @@ const defaultConfig: Config = {
     dll: 'tmp/dll',
     dist: 'dist',
     deploy: 'dist/deploy',
-    asset: 'asset',
-    lib: 'src/lib',
-    core: 'src/core',
-    component: 'src/component',
-    view: 'src/view',
-    image: 'asset/images',
-    style: 'src/lib/styles'
+    app: {
+      lib: 'src/lib',
+      core: 'src/core',
+      component: 'src/components',
+      view: 'src/views',
+      helper: 'src/helpers'
+      asset: 'assets',
+      font: 'assets/fonts',
+      image: 'assets/images',
+      style: 'src/helpers/styles',
+      data: 'assets/datas'
+    }
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 2333
   },
   dll: null
 }

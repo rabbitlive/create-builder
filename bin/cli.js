@@ -3,7 +3,9 @@
 /**
  * cli.js
  *
- * Main entry, generate `webpack.config.js` file.
+ * Main entry. Generate `webpack.config.js` file.
+ *
+ * @require babel-plugin-transform-object-rest-spread
  */
 
 const { resolve } = require('path')
@@ -25,32 +27,7 @@ function main() {
         rules: [
           {
             test: /\.js$/,
-            use: [
-              {
-                loader: 'babel-loader',
-                options: {
-                  presets: [
-                    'react',
-                    [
-                      'env',
-                      {
-                        target: {
-                          browsers: ['last 1 Chrome versions']
-                        },
-                        modules: false,
-                        loose: true
-                      }
-                    ]
-                  ],
-                  plugins: [
-                    ['transform-object-rest-spread', { useBuiltIns: true }]
-                  ]
-                }
-              },
-              {
-                loader: resolve(__dirname, 'loader.js')
-              }
-            ]
+            use: 'babel-loader'
           }
         ]
       },

@@ -9,7 +9,7 @@
  * 
  * 1. Development mode
  *
- * Enable sourcemap and debug. Rich development log. Re-compile when 
+ * Enable sourcemap for debug. Rich development log. Re-compile when 
  * file content change. Enable HMR if it's possible.
  * 
  * 2. Prerelease mode

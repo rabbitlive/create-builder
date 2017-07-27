@@ -6,7 +6,6 @@
  * app-development
  *
  * Build app on development mode.
- * 
  */
 
 import { resolve } from 'path'
@@ -16,38 +15,39 @@ import template from 'html-webpack-template'
 import { NamedModulesPlugin, DefinePlugin, EnvironmentPlugin, DllReferencePlugin } from 'webpack'
 import dllScript from './dll-script-file'
 import dllRefer from './dll-ref-plugin'
+import makeAlias from './app-namemapper'
 import type { WebpackOption } from './webpack-option-type'
 
 function makeApp(option: *) {
   const {
     path,
-    server = {}
+    server
   } = option
   const {
     src,
     tmp,
     dll,
-    asset,
-    lib,
-    core,
-    component,
-    view,
-    image,
-    style
+    app
   } = path
   const {
     host,
     port
   } = server
-  const pkg = resolve(process.cwd(), './package.json')
   
+  const pkg = resolve(process.cwd(), './package.json')
   const dlls: Array<[string, DllReferencePlugin]> = checkDlls(dll)
+  const entry = {
+    [name]: [
+      'react-hot-loader/patch',
+      resolve(__dirname, 'src/index.js')
+    ]
+  }
 
   return {
     entry: {
       app: [
         'react-hot-loader/patch',
-        resolve(__dirname, 'src/boot.js')
+        resolve(__dirname, 'src/index.js')
       ]
     },
     output: {
@@ -61,7 +61,7 @@ function makeApp(option: *) {
         test: /\.js$/,
         use: [
           'cache-loader',
-          //'thread-loader?workers=2',
+          'thread-loader?workers=2',
           'babel-loader'
         ]
       },{
@@ -84,15 +84,7 @@ function makeApp(option: *) {
       }]
     },
     resolve: {
-      alias: {
-          ...defineAlias('lib', lib),
-          ...defineAlias('asset', asset),
-          ...defineAlias('style', style),
-          ...defineAlias('view', view),
-          ...defineAlias('component', component),
-          ...defineAlias('core', core),
-          ...defineAlias('image', image)
-      }
+      alias: makeAlias(app)
     },
     devServer: {
       host: host || '0.0.0.0',
