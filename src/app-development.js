@@ -8,7 +8,7 @@
  * Build app on development mode.
  */
 
-import { resolve } from 'path'
+import { resolve, relative } from 'path'
 import glob from 'glob'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import template from 'html-webpack-template'
@@ -21,7 +21,8 @@ import type { WebpackOption } from './webpack-option-type'
 function makeApp(option: *) {
   const {
     path,
-    server
+    server,
+    pkg
   } = option
   const {
     src,
@@ -29,40 +30,35 @@ function makeApp(option: *) {
     dll,
     app
   } = path
-  const {
-    host,
-    port
-  } = server
+
+  const tmpPath: string = resolve(__dirname, tmp)
+  const dllPath: string = resolve(__dirname, dll)
+  const dlls: Array<[string, DllReferencePlugin]> = checkDlls(dllPath)
   
-  const pkg = resolve(process.cwd(), './package.json')
-  const dlls: Array<[string, DllReferencePlugin]> = checkDlls(dll)
-  const entry = {
-    [name]: [
+  const entry: $PropertyType<WebpackOption, 'entry'> = {
+    [pkg.name]: [
       'react-hot-loader/patch',
       resolve(__dirname, 'src/index.js')
     ]
   }
 
-  return {
-    entry: {
-      app: [
-        'react-hot-loader/patch',
-        resolve(__dirname, 'src/index.js')
-      ]
-    },
-    output: {
-      path: resolve(__dirname, tmp),
-      filename: '[name].js',
-      chunkFilename: '[name].js',
-      publicPath: '/'
-    },
+  const output: $PropertyType<WebpackOption, 'output'> = {
+    path: tmpPath,
+    filename: '[name].js',
+    chunkFilename: '[name].js',
+    publicPath: '/'
+  }
+
+  const webpackOption: WebpackOption = {
+    entry,
+    output,
     module: {
       rules: [{
         test: /\.js$/,
         use: [
           'cache-loader',
-          'thread-loader?workers=2',
-          'babel-loader'
+          //'thread-loader?workers=2',
+          'babel-loader?cacheDirectory'
         ]
       },{
         test: /\.css$/,
@@ -86,17 +82,18 @@ function makeApp(option: *) {
     resolve: {
       alias: makeAlias(app)
     },
+    devtool: 'source-map', 
     devServer: {
-      host: host || '0.0.0.0',
-      port: port || '2333',
-      contentBase: resolve(__dirname, tmp),
+      host: server.host,
+      port: server.port,
+      contentBase: [tmpPath, dllPath],
       publicPath: '/',
       historyApiFallback: true,
       hot: true
     },
     plugins: [
       new HtmlWebpackPlugin({
-        title: pkg.name,
+        title: '@Rabi ' + pkg.name,
         template: template,
         mobile: true,
         inject: false,
@@ -111,27 +108,18 @@ function makeApp(option: *) {
       new EnvironmentPlugin(['NODE_ENV']),
     ].concat([
         ...dlls.map(x => x[1])
-    ])
+    ])    
   }
+
+  return webpackOption
 }
 
-function checkDlls(dll: string): Array<[string, DllReferencePlugin]> {
-  const manifests: Array<string> = glob.sync(dll + '/*.json')
-  const dllPath: string = resolve(__dirname, dll)
+function checkDlls(dllPath: string): Array<[string, DllReferencePlugin]> {
+  const manifests: Array<string> = glob.sync(dllPath + '/*.json')
   return manifests.map(manifest => {
     const name: string = manifest.match(/\/([^\/]+)-manifest\.json$/)[1]
-    return [dllScript(dll)(name), dllRefer(dllPath)(name)]
+    return [dllScript(name), dllRefer(dllPath)(name)]
   })
-}
-
-function defineAlias(name: string, path: string): ?{ [string]: string } {
-  if(!path) {
-    return null
-  }
-
-  return {
-    [name]: resolve(__dirname, path)
-  }
 }
 
 export default makeApp

@@ -27,17 +27,18 @@ function make(option: Option): WebpackOption | Array<WebpackOption> {
   const { task, ...options } = option
   let config: Config = /*config{*/ {} /*}*/
   let pkg: Object = /*pkg{*/ {} /*}*/
-  const combineOption: CombineOption = {    
+  const combineOption: CombineOption & { pkg: Objec } = {    
       ...defaultConfig,
       ...config,
-      ...options
+      ...options,
+    pkg
   }
 
   switch (task) {
     case 'dll':
-      return makeDll(combineOption, pkg)
+      return makeDll(combineOption)
     case 'app':
-      return makeApp(combineOption, pkg)
+      return makeApp(combineOption)
     default:
       throw new Error(`[Builder] Unknow task ${task}`)
   }

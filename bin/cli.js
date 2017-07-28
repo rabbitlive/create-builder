@@ -27,7 +27,7 @@ function main() {
         rules: [
           {
             test: /\.js$/,
-            use: 'babel-loader'
+            use: ['babel-loader', resolve(__dirname, 'loader.js')]
           }
         ]
       },
@@ -56,14 +56,18 @@ function main() {
       const info = stats.toJson()
 
       if (stats.hasErrors()) {
-        console.error(info.errors)
+        info.errors.forEach(console.error)
       }
 
       if (stats.hasWarnings()) {
-        console.warn(info.warnings)
+        info.warnings.forEach(console.warn)
       }
 
-      console.log(stats.toString())
+      console.log(stats.toString({
+        chunks: false,
+        colors: true,
+        maxModules: Infinity
+      }))
     }
   )
 }

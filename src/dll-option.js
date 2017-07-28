@@ -14,7 +14,6 @@
 
 import { resolve } from 'path'
 import { DllPlugin } from 'webpack'
-import merge from 'webpack-merge'
 import type { WebpackOption } from './webpack-option-type'
 
 type DllWebpackOption = {
@@ -22,15 +21,15 @@ type DllWebpackOption = {
   path: string
 }
 
-function needMergeOption(targetOption: WebpackOption): WebpackOption {
-  return function(defaultOption: WebpackOption) {
-    if(!targetOption) {
-      return defaultOption
-    } else {
-      return merge.smart(defaultOption, targetOption) 
-    }
-  }
-}
+// function needMergeOption(targetOption: WebpackOption): WebpackOption {
+//   return function(defaultOption: WebpackOption) {
+//     if(!targetOption) {
+//       return defaultOption
+//     } else {
+//       return merge.smart(defaultOption, targetOption) 
+//     }
+//   }
+// }
 
 function dllOption(option: DllWebpackOption, webpackOption?: WebpackOption): WebpackOption {
   const { entry, path } = option
@@ -38,7 +37,7 @@ function dllOption(option: DllWebpackOption, webpackOption?: WebpackOption): Web
   const dllDirPath: string = resolve(path)
   const dllManifestPath: string = resolve(dllDirPath, '[name]-manifest.json')
 
-  return needMergeOption(webpackOption)({
+  return {
     entry: entry,
     output: {
       path: dllDirPath,
@@ -59,7 +58,7 @@ function dllOption(option: DllWebpackOption, webpackOption?: WebpackOption): Web
         name: '[name]'
       })
     ]
-  })
+  }
 }
 
 export default dllOption

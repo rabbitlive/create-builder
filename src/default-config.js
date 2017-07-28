@@ -48,7 +48,7 @@ const defaultConfig: Config = {
       core: 'src/core',
       component: 'src/components',
       view: 'src/views',
-      helper: 'src/helpers'
+      helper: 'src/helpers',
       asset: 'assets',
       font: 'assets/fonts',
       image: 'assets/images',

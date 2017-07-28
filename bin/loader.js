@@ -1,11 +1,18 @@
+// -*- mode: js -*-
+// -*- coding: utf-8 -*-
+
 /**
  * loader.js
  *
- * Load config file inject to `src/index.js`.
+ * Inject config file and package.json into to `src/index.js`.
  */
 
-const { exists } = require('fs')
+const { access } = require('fs')
 const { resolve, sep } = require('path')
+
+function replaceSeq(path) {
+  return path.split(sep).join('/')
+}
 
 module.exports = function(content, options) {
   let out = content
@@ -13,16 +20,25 @@ module.exports = function(content, options) {
 
   if (!this.request.match(/src(\/|\\)index\.js$/)) {
     callback(null, content)
-  } else {
-    const config = resolve('./rabi.js')
-    const pkg = resolve('./package.json')
-    exists(config, isExists => {
-      if (!isExists) {
-        callback(null, content)
-      } else {
-        const configTpl = `\
+    return
+  }
+  
+  const config = resolve('./rabi.js')
+  const pkg = resolve('./package.json')
+
+  Promise.resolve(content)
+    .then(content => {
+      return new Promise(function(resolve, reject) {
+        access(config, err => {
+          if(err) {
+            resolve(content)
+            return
+          }
+
+          const regex = /\/\*config\{\*\/[^\/]+\/\*\}\*\//i
+          const tpl = `\
 (function() {
-const configFile = require('${config.split(sep).join('/')}')
+const configFile = require('${replaceSeq(config)}')
 const mod = configFile.default || configFile 
 if(typeof mod === 'function') {
   return mod()
@@ -31,13 +47,28 @@ if(typeof mod === 'function') {
 }
 })()
 `
-        const pkgTpl = `require('${pkg.split(sep).join('/')}')`
-        const replacedContent = content
-                 .replace(/\/\*config\{\*\/[^\/]+\/\*\}\*\//, configTpl)
-              .replace(/\/\*pkg\{\*\/[^\/]+\/\*\}\*\//, pkgTpl)
-        
-        callback(null, replacedContent)
-      }
+          resolve(content.replace(regex, tpl))
+        })
+      })
     })
-  }
+    .then(content => {
+      return new Promise(function(resolve, reject) {
+        access(pkg, err => {
+          if(err) {
+            resolve(content)
+            return
+          }
+
+          const regex = /\/\*pkg\{\*\/[^\/]+\/\*\}\*\//i
+          const tpl = `require('${replaceSeq(pkg)}')`
+          resolve(content.replace(regex, tpl))
+        })
+      })
+    })
+    .catch(err => {
+      callback(err)
+    })
+    .then(content => {
+      callback(null, content)
+    })
 }
