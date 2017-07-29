@@ -27,7 +27,7 @@ function make(option: Option): WebpackOption | Array<WebpackOption> {
   const { task, ...options } = option
   let config: Config = /*config{*/ {} /*}*/
   let pkg: Object = /*pkg{*/ {} /*}*/
-  const combineOption: CombineOption & { pkg: Objec } = {    
+  const combineOption: CombineOption & { pkg: Object } = {    
       ...defaultConfig,
       ...config,
       ...options,

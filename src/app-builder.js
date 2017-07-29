@@ -25,14 +25,15 @@
 import { resolve } from 'path'
 import type { WebpackOption } from './webpack-option-type'
 import makeDevelopmentApp from './app-development'
+import makePrereleaseApp from './app-prerelease'
 
 function makeApp(
   option: *
 ): WebpackOption | Array<WebpackOption> {
 
   switch (process.env.NODE_ENV) {
-    // case 'prerelease':
-    //   return makePrereleaseApp()
+    case 'prerelease':
+      return makePrereleaseApp(option)
     // case 'production':
     //   return makeProdutionApp()
     case 'development':
