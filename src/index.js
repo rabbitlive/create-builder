@@ -9,6 +9,7 @@
  */
 
 import makeDll from './dll-builder'
+import makeLib from './lib-builder'
 import makeApp from './app-builder'
 import defaultConfig from './default-config'
 import type { WebpackOption } from './webpack-option-type'
@@ -37,6 +38,8 @@ function make(option: Option): WebpackOption | Array<WebpackOption> {
   switch (task) {
     case 'dll':
       return makeDll(combineOption)
+    case 'lib':
+      return makeLib(combineOption)
     case 'app':
       return makeApp(combineOption)
     default:

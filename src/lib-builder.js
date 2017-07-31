@@ -3,7 +3,7 @@
 // @flow
 
 /**
- * app-builder
+ * lib-builder
  *
  * Build app with multi mode.
  * 
@@ -24,23 +24,22 @@
 
 import { resolve } from 'path'
 import type { WebpackOption } from './webpack-option-type'
-import makeDevelopmentApp from './app-development'
-import makePrereleaseApp from './app-prerelease'
-import makeProductionApp from './app-production'
+import makeDevelopmentLib from './lib-development-builder'
+//import makeProductionLib from './app-production'
 
-function makeApp(
+function makeLib(
   option: *
 ): WebpackOption | Array<WebpackOption> {
 
   switch (process.env.NODE_ENV) {
-    case 'prerelease':
-      return makePrereleaseApp(option)
-    case 'production':
-      return makeProductionApp(option)
+    // case 'prerelease':
+    //   return makePrereleaseApp(option)
+    // case 'production':
+    //   return makeProductionApp(option)
     case 'development':
     default:
-      return makeDevelopmentApp(option)
+      return makeDevelopmentLib(option)
   }
 }
 
-export default makeApp
+export default makeLib

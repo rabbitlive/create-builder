@@ -3,21 +3,24 @@
 // @flow
 
 /**
- * app-prerelease
+ * lib-development-builder
  *
- * Build app on prerelease mode.
+ * Build lib on development mode.
  */
 
 import { resolve, relative } from 'path'
 import glob from 'glob'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-import template from 'html-webpack-template'
-import { NamedModulesPlugin, DefinePlugin, EnvironmentPlugin } from 'webpack'
+import nodeExternals from 'webpack-node-externals'
 import makeAlias from './app-namemapper'
-import unpkgResolve from './unpkg-resolver'
-import umdExternals from './umd-external'
-import umdScripts from './umd-load-script'
 import type { WebpackOption } from './webpack-option-type'
+import {
+  NamedModulesPlugin,
+  DefinePlugin,
+  EnvironmentPlugin,
+  ExternalsPlugin,
+  HotModuleReplacementPlugin
+} from 'webpack'
+
 
 function makeApp(option: *) {
   const {
@@ -33,17 +36,19 @@ function makeApp(option: *) {
   } = path
 
   const tmpPath: string = resolve(__dirname, tmp)
-  const umds: Array<CDNModule> = unpkgResolve(pkg, false)
   
   const entry: $PropertyType<WebpackOption, 'entry'> = {
-    [pkg.name]: resolve(__dirname, 'src/index.js')
+    [pkg.name]: [
+      'webpack/hot/poll?1000',
+      resolve(__dirname, 'src/boot.js')
+    ]
   }
 
   const output: $PropertyType<WebpackOption, 'output'> = {
     path: tmpPath,
     filename: '[name].js',
-    chunkFilename: '[name].js',
-    publicPath: '/'
+    libraryTarget: 'commonjs2',
+    library: '[name]'
   }
 
   const webpackOption: WebpackOption = {
@@ -54,7 +59,6 @@ function makeApp(option: *) {
         test: /\.js$/,
         use: [
           'cache-loader',
-          //'thread-loader?workers=2',
           'babel-loader?cacheDirectory'
         ]
       },{
@@ -76,34 +80,26 @@ function makeApp(option: *) {
         ]
       }]
     },
-    resolve: {
-      alias: makeAlias(app)
-    },
-    externals: umdExternals(umds),
-    devtool: 'source-map', 
-    devServer: {
-      host: server.host,
-      port: server.port,
-      contentBase: tmpPath,
-      publicPath: '/',
-      historyApiFallback: true,
+    target: 'node',
+    node: false,
+    devtool: 'source-map',
+    watch: true,
+    stats: {
+      maxModules: Infinity
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        title: '@Rabi ' + pkg.name,
-        template: template,
-        mobile: true,
-        inject: false,
-        appMountId: 'app',
-        scripts: [
-            ...umdScripts(umds)
+      new ExternalsPlugin('commonjs', nodeExternals({
+        whitelist: [
+          pkg.name,
+          /^webpack\/hot\/poll/
         ]
-      }),
+      })),
 
-      //new NamedModulesPlugin(),
+      new HotModuleReplacementPlugin(),
+      new NamedModulesPlugin(),
       //new DefinePlugin(mapRuntimeConfig(config)),
       new EnvironmentPlugin(['NODE_ENV']),
-    ]  
+    ]
   }
 
   return webpackOption

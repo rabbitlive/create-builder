@@ -12,11 +12,21 @@ import { resolve, relative } from 'path'
 import glob from 'glob'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import template from 'html-webpack-template'
-import { NamedModulesPlugin, DefinePlugin, EnvironmentPlugin, DllReferencePlugin } from 'webpack'
-import dllScript from './dll-script-file'
-import dllRefer from './dll-ref-plugin'
 import makeAlias from './app-namemapper'
+import unpkgResolve from './unpkg-resolver'
+import umdExternals from './umd-external'
+import umdScripts from './umd-load-script'
 import type { WebpackOption } from './webpack-option-type'
+import {
+  NamedModulesPlugin,
+  DefinePlugin,
+  EnvironmentPlugin,
+  HashedModuleIdsPlugin,
+  optimize as webpackOptimize
+} from 'webpack'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import ManifestPlugin from 'webpack-manifest-plugin'
+const { CommonsChunkPlugin, ModuleConcatenationPlugin } = webpackOptimize  
 
 function makeApp(option: *) {
   const {
@@ -26,28 +36,29 @@ function makeApp(option: *) {
   } = option
   const {
     src,
-    tmp,
+    dist,
     dll,
     app
   } = path
 
-  const tmpPath: string = resolve(__dirname, tmp)
-  const dllPath: string = resolve(__dirname, dll)
-  const dlls: Array<[string, DllReferencePlugin]> = checkDlls(dllPath)
+  const distPath: string = resolve(__dirname, dist)
+  const umds: Array<CDNModule> = unpkgResolve(pkg, true)
   
   const entry: $PropertyType<WebpackOption, 'entry'> = {
-    [pkg.name]: [
-      'react-hot-loader/patch',
-      resolve(__dirname, 'src/index.js')
-    ]
+    [pkg.name]: resolve(__dirname, 'src/index.js')
   }
 
   const output: $PropertyType<WebpackOption, 'output'> = {
-    path: tmpPath,
-    filename: '[name].js',
-    chunkFilename: '[name].js',
+    path: distPath,
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[name].[chunkhash].js',
     publicPath: '/'
   }
+
+  const extractCSS = new ExtractTextPlugin({
+    filename: "[name].[contenthash].css",
+    allChunks: true
+  }) 
 
   const webpackOption: WebpackOption = {
     entry,
@@ -57,16 +68,17 @@ function makeApp(option: *) {
         test: /\.js$/,
         use: [
           'cache-loader',
-          //'thread-loader?workers=2',
           'babel-loader?cacheDirectory'
         ]
       },{
         test: /\.css$/,
-        use: [
-          'style-loader&sourceMap',
-          'css-loader?modules=true&importLoaders=1&sourceMap',
-          'postcss-loader?sourceMap'
-        ]
+        use: extractCSS.extract({
+          fallback: 'style-loader',          
+          use: [
+            'css-loader?modules=true&importLoaders=1&sourceMap',
+            'postcss-loader?sourceMap'
+          ] 
+        })
       },{
         test: /\.(png|jpg|gif)$/,
         use: [
@@ -82,15 +94,16 @@ function makeApp(option: *) {
     resolve: {
       alias: makeAlias(app)
     },
-    devtool: 'source-map', 
+    //devtool: 'source-map', 
     devServer: {
       host: server.host,
       port: server.port,
-      contentBase: [tmpPath, dllPath],
+      contentBase: distPath,
       publicPath: '/',
       historyApiFallback: true,
       hot: true
     },
+    externals: umdExternals(umds),
     plugins: [
       new HtmlWebpackPlugin({
         title: '@Rabi ' + pkg.name,
@@ -99,27 +112,24 @@ function makeApp(option: *) {
         inject: false,
         appMountId: 'app',
         scripts: [
-            ...dlls.map(x => x[0])
+            ...umdScripts(umds)
         ]
       }),
 
-      new NamedModulesPlugin(),
-      //new DefinePlugin(mapRuntimeConfig(config)),
+      extractCSS,
+
+      new ModuleConcatenationPlugin(),
       new EnvironmentPlugin(['NODE_ENV']),
-    ].concat([
-        ...dlls.map(x => x[1])
-    ])    
+      new HashedModuleIdsPlugin(),
+      new ManifestPlugin(),
+      new CommonsChunkPlugin({
+        name: 'runtime',
+        minChunks: Infinity
+      }),
+    ]    
   }
 
   return webpackOption
-}
-
-function checkDlls(dllPath: string): Array<[string, DllReferencePlugin]> {
-  const manifests: Array<string> = glob.sync(dllPath + '/*.json')
-  return manifests.map(manifest => {
-    const name: string = manifest.match(/\/([^\/]+)-manifest\.json$/)[1]
-    return [dllScript(name), dllRefer(dllPath)(name)]
-  })
 }
 
 export default makeApp
