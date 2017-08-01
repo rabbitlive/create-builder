@@ -4,41 +4,99 @@
 /**
  * loader.js
  *
- * Inject config file and package.json into to `src/index.js`.
+ * Inject config file and package.json to entry file.
  */
 
-const { access } = require('fs')
-const { resolve, sep } = require('path')
+const fs   = require('fs')
+const path = require('path')
 
-function replaceSeq(path) {
-  return path.split(sep).join('/')
+
+/**
+ * Replacer type.
+ *
+ * @class  
+ */
+class Replacer {
+  /** 
+   * @constructor
+   * @param {string} filepath
+   * @param {string} template
+   * @param {string} regexp
+   */
+  constructor(options = {}) {
+    const { filepath, template, regexp } = options
+    
+    this.filepath = filepath
+    this.template = template
+    this.regexp   = regexp
+  }
 }
 
-module.exports = function(content, options) {
-  let out = content
+
+/**
+ * replaceContent
+ *
+ * @param {Replacer} replacer
+ * @param {string} content - entry file content
+ * @return {Promise<string>}
+ */
+function replaceContent(replacer) {
+  return function(content) {
+    return new Promise(function(resolve, reject) {
+      // Test file was not exists.
+      fs.access(replacer.filepath, err => {
+        if(err) {
+          resolve(content)
+          return
+        }
+
+        // Replace hook.
+        resolve(
+          content.replace(replacer.regexp, replacer.template)
+        )
+      })
+    })
+  }
+}
+
+
+/**
+ * Main
+ */
+function loader(content, options) {
+  /**
+   * Webpack async loader callback.
+   */ 
   const callback = this.async()
 
-  if (!this.request.match(/src(\/|\\)index\.js$/)) {
+  /** 
+   * Match the entry file.
+   *
+   * 1. `index` for app builder
+   * 2. `lib` for lib builder
+   */
+  const REGEX_ENTRY = /src(\/|\\)(index|lib)\.js$/i
+  
+  if (!this.request.match(REGEX_ENTRY)) {
     callback(null, content)
     return
   }
+
+  /**
+   * Replace contents by HOOK.
+   *
+   * 1. Replace config file `rabi.js`
+   * 2. Replace `package.json` 
+   */
+  const config = path.resolve('./rabi.js')
+  const pkg    = path.resolve('./package.json')
   
-  const config = resolve('./rabi.js')
-  const pkg = resolve('./package.json')
-
-  Promise.resolve(content)
-    .then(content => {
-      return new Promise(function(resolve, reject) {
-        access(config, err => {
-          if(err) {
-            resolve(content)
-            return
-          }
-
-          const regex = /\/\*config\{\*\/[^\/]+\/\*\}\*\//i
-          const tpl = `\
+  const rc_config = new Replacer({
+    filepath: config,
+    regexp: /\/\*config\{\*\/[^\/]+\/\*\}\*\//,
+    template: `\
 (function() {
-const configFile = require('${replaceSeq(config)}')
+const configFile = require('${config.split(path.sep).join('/')}')
 const mod = configFile.default || configFile 
 if(typeof mod === 'function') {
   return mod()
@@ -46,29 +104,22 @@ if(typeof mod === 'function') {
   return mod
 }
 })()
-`
-          resolve(content.replace(regex, tpl))
-        })
-      })
-    })
-    .then(content => {
-      return new Promise(function(resolve, reject) {
-        access(pkg, err => {
-          if(err) {
-            resolve(content)
-            return
-          }
+`})
+  const rc_pkg = new Replacer({
+    filepath: pkg,
+    regexp: /\/\*pkg\{\*\/[^\/]+\/\*\}\*\//,
+    template: `require('${pkg.split(path.sep).join('/')}')`
+  })
 
-          const regex = /\/\*pkg\{\*\/[^\/]+\/\*\}\*\//i
-          const tpl = `require('${replaceSeq(pkg)}')`
-          resolve(content.replace(regex, tpl))
-        })
-      })
-    })
-    .catch(err => {
-      callback(err)
-    })
-    .then(content => {
-      callback(null, content)
-    })
+  /**
+   * Main process.
+   */
+  Promise.resolve(content)
+    .then(replaceContent(rc_config))
+    .then(replaceContent(rc_pkg))
+    .catch(callback)
+    .then(content => callback(null, content))
 }
+
+
+module.exports = loader

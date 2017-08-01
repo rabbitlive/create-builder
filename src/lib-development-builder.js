@@ -11,7 +11,6 @@
 import { resolve, relative } from 'path'
 import glob from 'glob'
 import nodeExternals from 'webpack-node-externals'
-import makeAlias from './app-namemapper'
 import type { WebpackOption } from './webpack-option-type'
 import {
   NamedModulesPlugin,
