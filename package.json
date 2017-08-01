@@ -1,6 +1,6 @@
 {
   "name": "create-builder",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Application builder.",
   "main": "index.js",
   "scripts": {
