@@ -1,7 +1,7 @@
 {
   "name": "@rabi/builder",
   "version": "0.0.1",
-  "description": "React/Redux Application builder.",
+  "description": "Application builder.",
   "main": "index.js",
   "scripts": {
     "test": "yarn jest",
