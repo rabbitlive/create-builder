@@ -16,7 +16,7 @@ import { resolve } from 'path'
 import dlloption from './dll-option'
 import type { WebpackOption } from './webpack-option-type'
 
-function makeVendorDll(path: string): WebpackOption {
+function makeVendorDll(path: string, webpackOption?: WebpackOption): WebpackOption {
   // Read root package.json file.
   const pkgPath: string = resolve(process.cwd(), './package.json')
   const isExists: boolean = existsSync(pkgPath)
@@ -38,7 +38,7 @@ function makeVendorDll(path: string): WebpackOption {
   return dlloption({
     entry: { vendor: Object.keys(deps || {}) },
     path
-  })
+  }, webpackOption)
 }
 
 export default makeVendorDll

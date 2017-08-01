@@ -21,7 +21,17 @@ type DllWebpackOption = {
   path: string
 }
 
-function dllOption(option: DllWebpackOption): WebpackOption {
+// function needMergeOption(targetOption: WebpackOption): WebpackOption {
+//   return function(defaultOption: WebpackOption) {
+//     if(!targetOption) {
+//       return defaultOption
+//     } else {
+//       return merge.smart(defaultOption, targetOption) 
+//     }
+//   }
+// }
+
+function dllOption(option: DllWebpackOption, webpackOption?: WebpackOption): WebpackOption {
   const { entry, path } = option
 
   const dllDirPath: string = resolve(path)
