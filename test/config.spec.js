@@ -10,7 +10,7 @@ import glob$ from 'glob'
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000
 
-const name = 'test-dll'
+const name = 'test-config'
 const dir = resolve(__dirname, name)
 
 const mkdir = promisify(fs.mkdir)
@@ -56,9 +56,19 @@ afterAll(() => {
   return del(dir)
 })
 
-test('Build vendor dll from `package.json`', () => {
+test('Build all dll when config file set hmr to `true`', () => {
   const cwd = process.cwd()
-  return exec(`yarn link`)
+  return writeFile(
+    resolve(dir, 'rabi.js'),
+    `\
+export default function() {
+  return { 
+    dll: 'all'
+  }
+}
+`
+  )
+    .then(() => exec(`yarn link`))
     .then(() => process.chdir(dir))
     .then(() => exec(`yarn add --offline react react-dom`))
     .then(() =>
@@ -78,7 +88,7 @@ babel-plugin-transform-object-rest-spread`)
     )
     .then(() => glob(resolve(dir, 'tmp/dll') + '/*'))
     .then(data => {
-      return expect(data.length).toBe(2)
+      return expect(data.length).toBe(4)
     })
     .then(() => process.chdir(cwd))
     .then(() => del(dir))

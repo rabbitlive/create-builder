@@ -14,7 +14,7 @@
 import dlloption from './dll-option'
 import type { WebpackOption } from './webpack-option-type'
 
-function makeVendorDll(path: string): WebpackOption {
+function makeVendorDll(path: string, webpackOption?: WebpackOption): WebpackOption {
   return dlloption({
     entry: {
       hmr: [
@@ -24,7 +24,7 @@ function makeVendorDll(path: string): WebpackOption {
       ]
     },
     path
-  })
+  }, webpackOption)
 }
 
 export default makeVendorDll

@@ -1,11 +1,11 @@
 {
   "presets": [["env", {
-    "target": {
+    "targets": {
       "browsers": ["last 1 Chrome versions"]
     },
     "modules": false,
     "loose": true
-  }]],
+  }], "react"],
   "plugins": [
     ["transform-object-rest-spread", { "useBuiltIns": true } ]
   ],

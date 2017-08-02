@@ -12,10 +12,8 @@
  * @return {string}
  */
 
-function dllScriptFile(dir: string): * {
-  return function (name: string): string {
-    return `/${dir}/${name}.js`
-  }
+function dllScriptFile(name: string): string {
+  return `/${name}.js`
 }
 
 export default dllScriptFile

@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/**
+ * cli.js
+ *
+ * CLI main. Generate `webpack.config.js` file.
+ */
+
 const { resolve } = require('path')
 const webpack = require('webpack')
 const ExternalsPlugin = require('webpack/lib/ExternalsPlugin')
@@ -8,65 +14,54 @@ const pkg = require('../package.json')
 
 function main() {
   webpack({
-    entry: pkg.name,
-    output: {
-      filename: 'webpack.config.js',
-      libraryTarget: 'commonjs2',
-      library: '[name]'
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['react', ['env', {
-                target: {
-                  browsers: ['last 1 Chrome versions']
-                },
-                modules: false,
-                loose: true
-              }]],
-              plugins: [
-                ['transform-object-rest-spread', { 'useBuiltIns': true } ],
-              ]
-            }
-          }
-        }
-      ]
-    },
-    target: 'node',
-    node: false,
-    plugins: [
-      new ExternalsPlugin('commonjs', nodeExternals({
-        whitelist: pkg.name
-      }))
-    ]
-
+	  entry: resolve(__dirname, '../src/lib.js'),
+	  output: {
+	    filename: 'webpack.config.js',
+	    libraryTarget: 'commonjs2',
+	    library: '[name]'
+	  },
+	  module: {
+	    rules: [{
+		    test: /\.js$/,
+		    use: [
+          'babel-loader',
+          resolve(__dirname, 'loader.js')
+        ]
+		  }]
+	  },
+	  target: 'node',
+	  node: false,
+	  plugins: [
+	    new ExternalsPlugin('commonjs', nodeExternals({
+		    whitelist: pkg.name
+		  }))
+	  ]
   }, function(err, stats) {
-    if(err) {
-      console.error(err.stack || err)
+	  if (err) {
+	    console.error(err.stack || err)
 
-      if(err.details) {
-        console.error(err.details)
-      }
+	    if (err.details) {
+		    console.error(err.details)
+	    }
 
-      return
-    }
+	    return
+	  }
 
-    const info = stats.toJson()
+	  const info = stats.toJson()
 
-    if(stats.hasErrors()) {
-      console.error(info.errors)
-    }
+	  if (stats.hasErrors()) {
+	    info.errors.forEach(console.error)
+	  }
 
-    if(stats.hasWarnings()) {
-      console.warn(info.warnings)
-    }
+	  if (stats.hasWarnings()) {
+	    info.warnings.forEach(console.warn)
+	  }
 
-    console.log(stats.toString())
-    
+	  console.log(stats.toString({
+	    chunks: false,
+	    colors: true,
+	    maxModules: Infinity
+	  }))
   })
 }
 

@@ -18,10 +18,10 @@ import { DllReferencePlugin } from 'webpack'
 const suffix: string = 'manifest.json'
 
 function dllRefPlugin(path: string): * {
-  return function(name: string): DllReferencePlugin{
+  return function(name: string): DllReferencePlugin {
     const manifestFileName: string = `${name}-${suffix}`
-    
-    return new DllReferencePlugin({ 
+
+    return new DllReferencePlugin({
       context: '.',
       manifest: resolve(path, manifestFileName)
     })

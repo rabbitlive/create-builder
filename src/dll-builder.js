@@ -17,24 +17,38 @@ import makeVendorDll from './dll-vendor'
 import makeHMRDll from './dll-hmr'
 
 export type DllOption = {
-  dll: 'vendor' | 'hmr'  
+  dll?: 'vendor' | 'hmr' | 'all',
+  dllWebpackOption?: WebpackOption,
+  vendorDllWebpackOption?: WebpackOption,
+  hmrDllWebpackOption?: WebpackOption
 }
 
-export default function makeDll(option: *): WebpackOption | Array<WebpackOption> {
-  const { dll: task, path } = option
+function makeDll(
+  option: *
+): WebpackOption | Array<WebpackOption> {
+  const {
+    dll: task,
+    path,
+    dllWebpackOption,
+    vendorDllWebpackOption,
+    hmrDllWebpackOption
+  } = option
   const { dll: dllDir } = path
-  
   const dllPath: string = resolve(__dirname, dllDir)
 
+  // TODO Merge multi options use webpack-merge.
   switch (task) {
-    case 'vendor':
-      return makeVendorDll(dllPath)
     case 'hmr':
-      return makeHMRDll(dllPath)
-    default:
+      return makeHMRDll(dllPath, hmrDllWebpackOption || dllWebpackOption)
+    case 'all':
       return [
-	makeVendorDll(dllPath),
-	makeHMRDll(dllPath)
+        makeVendorDll(dllPath, vendorDllWebpackOption || dllWebpackOption),
+        makeHMRDll(dllPath, hmrDllWebpackOption || dllWebpackOption)
       ]
+    case 'vendor':
+    default:
+      return makeVendorDll(dllPath, vendorDllWebpackOption || dllWebpackOption)
   }
 }
+
+export default makeDll

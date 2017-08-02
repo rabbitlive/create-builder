@@ -1,19 +1,18 @@
 {
-  "name": "@rabi/builder",
-  "version": "0.0.1",
-  "description": "React/Redux Application builder.",
+  "name": "create-builder",
+  "version": "0.0.10",
+  "description": "Application builder.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "yarn jest",
+    "precommit": "yarn lint-staged"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rabbitlive/builder.git"
   },
   "keywords": [
-    "webpack",
-    "react",
-    "redux"
+    "webpack"
   ],
   "author": "Rabbit <yfhj1990@hotmail.com>",
   "license": "GPL-3.0",
@@ -21,36 +20,38 @@
     "url": "https://github.com/rabbitlive/builder/issues"
   },
   "bin": {
-    "rabi-builder": "bin/cli.js"
+    "create-builder": "bin/cli.js"
   },
   "homepage": "https://github.com/rabbitlive/builder#readme",
   "devDependencies": {
-    "babel-core": "^6.25.0",
     "babel-jest": "^20.0.3",
+    "chunk-manifest-webpack-plugin": "^1.1.2",
+    "clean-webpack-plugin": "^0.1.16",
+    "del": "^3.0.0",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "flow-bin": "^0.51.0",
+    "glob": "^7.1.2",
+    "jest": "^20.0.4",
+    "lint-staged": "^3.6.1",
+    "prettier": "^1.5.2",
+    "webpack-chunk-hash": "^0.4.0",
+    "webpack-dev-server": "^2.5.1",
+    "webpack-manifest-plugin": "^1.2.1"
+  },
+  "dependencies": {
+    "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
-    "flow-bin": "^0.51.0",
-    "jest": "^20.0.4",
-    "rimraf": "^2.6.1",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.5.1"
-  },
-  "peerDependencies": {
-    "babel-core": "^6",
-    "babel-loader": "^6 || ^7",
-    "babel-plugin-transform-object-rest-spread": "^6",
-    "babel-preset-env": "^1",
-    "babel-preset-react": "^6",
-    "react": "^14 || ^15",
-    "react-dom": "^14 || ^15",
-    "react-hot-loader": "next",
-    "webpack": "^2 || ^3",
-    "webpack-dev-server": "^2"
-  },
-  "dependencies": {
-    "react": "^15.6.1",
+    "webpack-merge": "^4.1.0",
     "webpack-node-externals": "^1.6.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "yarn prettier -- --write --no-semi --single-quote --parser=flow",
+      "git add"
+    ]
   }
 }
